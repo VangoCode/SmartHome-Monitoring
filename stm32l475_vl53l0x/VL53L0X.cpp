@@ -22,7 +22,10 @@ uint8_t VL53L0X_Init(VL53L0X *device, I2C_HandleTypeDef *i2cHandle) {
      */
     uint8_t regData;
 
+    printf("above status\n");
+
     status = VL53L0X_ReadRegister(device, register_0xC0, &regData);
+    printf("under status\n");
     error_count += ( status != HAL_OK );
 
 

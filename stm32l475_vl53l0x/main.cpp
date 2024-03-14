@@ -2,6 +2,7 @@
 // got thanks to a fellow group member
 
 
+#include "mbed.h"
 #include "VL53L0X.hpp"
 #include <stdbool.h>
 #include <stdio.h>
@@ -18,10 +19,11 @@ void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
   /* User can add his own implementation to report the HAL error return state */
-  __disable_irq();
-  while (1)
-  {
-  }
+  printf("Error\n");
+//   __disable_irq();
+//   while (1)
+//   {
+//   }
   /* USER CODE END Error_Handler_Debug */
 }
 
@@ -252,21 +254,24 @@ static void MX_I2C1_Init(void)
   hi2c1.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
   if (HAL_I2C_Init(&hi2c1) != HAL_OK)
   {
-    Error_Handler();
+    printf("I2C Initialization failed\n");
+    // Error_Handler();
   }
 
   /** Configure Analogue filter
   */
   if (HAL_I2CEx_ConfigAnalogFilter(&hi2c1, I2C_ANALOGFILTER_ENABLE) != HAL_OK)
   {
-    Error_Handler();
+      printf("Filter Initialization failed\n");
+    // Error_Handler();
   }
 
   /** Configure Digital filter
   */
   if (HAL_I2CEx_ConfigDigitalFilter(&hi2c1, 0) != HAL_OK)
   {
-    Error_Handler();
+      printf("Config Initialization failed\n");
+    // Error_Handler();
   }
   /* USER CODE BEGIN I2C2_Init 2 */
 
@@ -275,8 +280,9 @@ static void MX_I2C1_Init(void)
 }
 
 int main() {
-    printf("Began execution!");
+    printf("Began execution!\n");
     HAL_Init();
+    printf("Done HAL Init!\n");
 
     __HAL_RCC_GPIOA_CLK_ENABLE();
 
@@ -286,7 +292,9 @@ int main() {
     // hi2c1.Instance = I2C1;
 
     MX_GPIO_Init();
+    printf("Done Mx GPIO Init!\n");
     MX_I2C1_Init();
+    printf("Done I2C1 Init!\n");
 
     // GPIO_InitTypeDef GPIO_InitStruct;
 
@@ -297,18 +305,22 @@ int main() {
 
     // HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
+
     uint8_t error = VL53L0X_Init(&device, &hi2c1);
+    printf("Done VL53L0X Init!\n");
     printf("error: %d\n", error);
 
     while (true) {
+        printf("made it to while\n");
+        // VL53L0X_ReadRegister(&device, uint8_t reg, uint8_t *data)
         // HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
         // printf("error: %d\n", error);
-        // HAL_Delay(300);
+        HAL_Delay(300);
     }
 
     return 0;
 }
 
-void SysTick_Handler(void) {
-    HAL_IncTick();
-}
+// void SysTick_Handler(void) {
+//     HAL_IncTick();
+// }
