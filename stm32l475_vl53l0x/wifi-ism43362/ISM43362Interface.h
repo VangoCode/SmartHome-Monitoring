@@ -149,6 +149,16 @@ public:
      */
     virtual nsapi_connection_status_t get_connection_status() const;
 
+
+    /** Override function to specify where in the hierarchy to call
+     * @note Written by Ron Varshavsky
+     */
+     virtual nsapi_error_t gethostbyname(const char *host,
+                                        SocketAddress *address, nsapi_version_t version = NSAPI_UNSPEC, const char *interface_name = NULL)
+                                        override {
+                                            return NetworkStack::gethostbyname(host, address, version, interface_name);
+                                        };
+
 protected:
     /** Open a socket
      *  @param handle       Handle in which to store new socket
