@@ -5,5 +5,10 @@
             "platform.stdio-baud-rate": 115200,
             "platform.callback-nontrivial": true
         }
+    },
+    "config": {
+        "ISM43362_WIFI_DEBUG": {
+            "value": 1
+        }
     }
 }
