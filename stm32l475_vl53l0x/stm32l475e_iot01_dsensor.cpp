@@ -1,6 +1,7 @@
 /*
  * Majority of code here taken from Szymon Szantula 
  * https://github.com/byq77
+ * https://os.mbed.com/users/byq77/code/vl53l0x-mbed/
  */
 
 /**
@@ -40,7 +41,7 @@ DSENSOR_StatusTypeDef BSP_DSENSOR_Init(VL53L0X_Settings settings)
 }
 
 /**
-  * @brief  DeInitialize the ACCELERO.
+  * @brief  DeInitialize the Distance Sensor.
   * @retval None.
   */
 void BSP_DSENSOR_DeInit(void)
@@ -49,7 +50,7 @@ void BSP_DSENSOR_DeInit(void)
 }
 
 /**
-  * @brief  Set/Unset the ACCELERO in low power mode.
+  * @brief  Set/Unset the Distance Sensor in low power mode.
   * @param  status 0 means disable Low Power Mode, otherwise Low Power Mode is enabled
   * @retval None
   */
