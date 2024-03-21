@@ -66,7 +66,7 @@ void cloud_init(){
 /*
     Sends an MQTT message to the cloud
 */
-void cloud_send(float temperature, float humidity, float pressure){
+void cloud_send(float distance){
     MQTT::Message message;
     message.retained = false;
     message.dup = false;
@@ -78,8 +78,8 @@ void cloud_send(float temperature, float humidity, float pressure){
     message.qos = MQTT::QOS0;
     message.id = mqtt_message_id++;
     int ret = snprintf(buf, buf_size, 
-                "{\"sensor\":{\"temperature\":%.2f,\"humidity\":%.2f,\"pressure\":%.2f}}", 
-                temperature, humidity, pressure);
+                "{\"sensor\":{\"distance\":%.2f}}", 
+                distance);
     if(ret < 0) {
         printf("ERROR: snprintf() returns %d.", ret);
     }
