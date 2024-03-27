@@ -21,8 +21,8 @@
     Private classes for MQTT handling
 */
 
-#define MBED_CONF_APP_WIFI_SSID "..."
-#define MBED_CONF_APP_WIFI_PASSWORD "..."
+#define MBED_CONF_APP_WIFI_SSID ""
+#define MBED_CONF_APP_WIFI_PASSWORD ""
 
 #ifndef WIFI_INTERFACE_DEF
 #define WIFI_INTERFACE_DEF

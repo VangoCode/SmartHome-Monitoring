@@ -1,12 +1,12 @@
 #ifndef __MQTT_SERVER_SETTING_H__
 #define __MQTT_SERVER_SETTING_H__
 
-const char MQTT_SERVER_HOST_NAME[] = "....iot.us-east-2.amazonaws.com";
+const char MQTT_SERVER_HOST_NAME[] = "...iot.us-east-2.amazonaws.com";
 const char MQTT_CLIENT_ID[] = "STM32L475VGIOT01A";
 const char MQTT_USERNAME[] = "STM32L4";
 const char MQTT_PASSWORD[] = "";
-const char MQTT_TOPIC_PUB[] = "pubtopic";
-const char MQTT_TOPIC_SUB[] = "subtopic";
+const char MQTT_TOPIC_PUB[] = "csc385-demo";
+const char MQTT_TOPIC_SUB[] = "csc385-demo-subscription";
 
 
 const int MQTT_SERVER_PORT = 8883;
