@@ -6,6 +6,7 @@
 #define AWS_IOT_UPDATE_FREQUENCY    60
 
 InterruptIn user_button(BUTTON1);
+int subscribe = 0;
 
 /* connect services */
 int connect(){
@@ -20,8 +21,21 @@ int connect(){
 }
 
 void send_reading_to_aws() {
-    float distance = BSP_DSENSOR_GetReading();
-    cloud_send(distance);
+    if (subscribe < 2)
+    {
+        subscribe = !subscribe;
+        printf("Running subscribe! Will we subscribe?: %d\n", subscribe);
+        cloud_read(subscribe);
+    }
+    if (subscribe == 0)
+    {
+        subscribe = 2;
+    }
+    if (subscribe == 2)
+    {
+        float distance = BSP_DSENSOR_GetReading();
+        cloud_send(distance);
+    }
 }
 
 
