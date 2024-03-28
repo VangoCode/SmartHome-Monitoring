@@ -36,7 +36,7 @@ SettingsInterface::SettingsInterface(std::string* sensors_list, int number_of_se
             settings.mode = single;
             BSP_DSENSOR_Init(settings);
 
-            p[i] = (BSP_DSENSOR_CAST) BSP_DSENSOR_GetReading;
+            p[i] = BSP_DSENSOR_GetReading;
         }
     }
 }
@@ -46,16 +46,18 @@ void SettingsInterface::get_sensor_data(void)
     for (int i = 0; i < num_sensors; i++)
     {
       float sensor = p[i]();
-      printf("sensor: %f\n", sensor);
+      printf("sensor %s: %f\n", sensors[i].c_str(), sensor);
       if (sensor < thresholds[i].min)
       {
         // SEND MQTT MESSAGE THAT BELOW THRESHOLD
         // TODO
+        printf("Reached below min threshold!\n");
       }
       if (sensor > thresholds[i].max)
       {
         // SEND MQTT MESSAGE THAT ABOVE THRESHOLD
         // TODO
+        printf("Reached above max threshold!\n");
       }
     //   return sensor;
     }

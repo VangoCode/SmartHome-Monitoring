@@ -67,7 +67,7 @@ void BSP_DSENSOR_LowPower(uint16_t status)
   * @brief  Get distance sensor values.
   * @retval the reading from the distance sensor
   */
-unsigned int BSP_DSENSOR_GetReading(void)
+float BSP_DSENSOR_GetReading(void)
 {
     unsigned int reading = sensor.readRangeSingleMillimeters();
     printf("%u\n", reading);
@@ -75,5 +75,5 @@ unsigned int BSP_DSENSOR_GetReading(void)
     {
         printf("TIMEOUT!\n");
     }
-    return reading;
+    return (float) reading;
 }

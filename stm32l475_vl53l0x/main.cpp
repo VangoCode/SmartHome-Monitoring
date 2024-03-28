@@ -42,15 +42,18 @@ int main()
     // unsigned int distance = 0;
 
     EventQueue* queue = mbed_event_queue();
-    string sensors[] = {"temperature", "humidity"};
+    string sensors[] = {"temperature", "humidity", "distance"};
     Threshold temp_thres;
     temp_thres.max = 30.0;
     temp_thres.min = 5.0;
     Threshold humid_thres;
     humid_thres.min = 0.0;
     humid_thres.max = 20.0;
-    Threshold thresholds[] = {temp_thres, humid_thres};
-    SettingsInterface* settings = initialize_settings_test(sensors, 2, thresholds);
+    Threshold dist_thres;
+    dist_thres.min = 0.0;
+    dist_thres.max = 200.0;
+    Threshold thresholds[] = {temp_thres, humid_thres, dist_thres};
+    SettingsInterface* settings = initialize_settings_test(sensors, 3, thresholds);
 
     queue->call_every(10s, get_data, settings);
 

@@ -11,8 +11,6 @@ typedef struct threshold_t
   float max;
 } Threshold;
 
-typedef float (*BSP_DSENSOR_CAST)(void);
-
 class SettingsInterface
 {
   public:
