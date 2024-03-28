@@ -29,7 +29,7 @@ DSENSOR_StatusTypeDef;
 DSENSOR_StatusTypeDef BSP_DSENSOR_Init(VL53L0X_Settings settings);
 void BSP_DSENSOR_DeInit(void);
 void BSP_DSENSOR_LowPower(uint16_t status); /* 0 Means Disable Low Power Mode, otherwise Low Power Mode is enabled */
-unsigned int BSP_DSENSOR_GetReading(void);
+float BSP_DSENSOR_GetReading(void);
 
 #endif /* __STM32L475E_IOT01_DSENSOR_H */
 
