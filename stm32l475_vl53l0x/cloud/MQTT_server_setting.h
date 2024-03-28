@@ -1,7 +1,7 @@
 #ifndef __MQTT_SERVER_SETTING_H__
 #define __MQTT_SERVER_SETTING_H__
 
-const char MQTT_SERVER_HOST_NAME[] = "...iot.us-east-2.amazonaws.com";
+const char MQTT_SERVER_HOST_NAME[] = ".iot.us-east-2.amazonaws.com";
 const char MQTT_CLIENT_ID[] = "STM32L475VGIOT01A";
 const char MQTT_USERNAME[] = "STM32L4";
 const char MQTT_PASSWORD[] = "";
@@ -41,6 +41,7 @@ const char* SSL_CLIENT_CERT_PEM = "-----BEGIN CERTIFICATE-----\n"
  */
 const char* SSL_CLIENT_PRIVATE_KEY_PEM = "-----BEGIN RSA PRIVATE KEY-----\n"
 "..."
+"aVO39KXLXZc4GakrDiknKVEaCzap0dy5LCoV0sVZ3zCQWgDNP+bK\n"
 "-----END RSA PRIVATE KEY-----\n";
 
 #endif /* __MQTT_SERVER_SETTING_H__ */

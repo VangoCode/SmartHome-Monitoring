@@ -24,65 +24,35 @@ int connect(){
 }
 
 void send_reading_to_aws() {
-    if (subscribe < 2)
-    {
-        subscribe = !subscribe;
-        printf("Running subscribe! Will we subscribe?: %d\n", subscribe);
-        cloud_read(subscribe);
-    }
-    if (subscribe == 0)
-    {
-        subscribe = 2;
-    }
-    if (subscribe == 2)
-    {
-        float distance = BSP_DSENSOR_GetReading();
-        cloud_send(distance);
-    }
-}
-
-void get_data(SettingsInterface* settings)
-{
-    settings->get_sensor_data();
+    cloud_read(0);
 }
 
 int main()
 {
     printf("IoT device starting\n");
 
-    // VL53L0X_Settings settings;
-    // settings.mode = single;
-    // BSP_DSENSOR_Init(settings);
-    // unsigned int distance = 0;
-
     EventQueue* queue = mbed_event_queue();
-    string sensors[] = {"temperature", "humidity", "distance"};
-    Threshold temp_thres;
-    temp_thres.max = 30.0;
-    temp_thres.min = 5.0;
-    Threshold humid_thres;
-    humid_thres.min = 0.0;
-    humid_thres.max = 20.0;
-    Threshold dist_thres;
-    dist_thres.min = 0.0;
-    dist_thres.max = 200.0;
-    Threshold thresholds[] = {temp_thres, humid_thres, dist_thres};
-    SettingsInterface* settings = initialize_settings_test(sensors, 3, thresholds);
-
-    queue->call_every(10s, get_data, settings);
 
     /* init cloud (connect wifi) */
-    cloud_init();
+    int wifi_connected = cloud_init();
+
+    if (wifi_connected != 0)
+    {
+        return -1;
+    }
     
     /* connect to network */
     int connected = connect();
 
     if(connected == 1){
-        // EventQueue *queue = mbed_event_queue();
+
+        // Subscribe to topic
+        cloud_read(1);
 
         user_button.fall(queue->event(send_reading_to_aws));
         printf("Attached button handler for message sending\n");
     } else {
         printf("Could not connect to network\n");
+        return -1;
     }
 }

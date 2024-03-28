@@ -25,9 +25,7 @@ VL53L0X sensor(i2c, timer);
 
 DSENSOR_StatusTypeDef BSP_DSENSOR_Init(VL53L0X_Settings settings)
 {  
-    printf("Start...\n");
     sensor.init();
-    printf("Initialisation completed!\n");
     sensor.setTimeout(500);
     // This increases the sensitivity of the sensor and extends its potential range, but increases the 
     // likelihood of getting an inaccurate reading because of reflections from other objects other than 
@@ -70,7 +68,6 @@ void BSP_DSENSOR_LowPower(uint16_t status)
 float BSP_DSENSOR_GetReading(void)
 {
     unsigned int reading = sensor.readRangeSingleMillimeters();
-    printf("%u\n", reading);
     if (sensor.timeoutOccurred())
     {
         printf("TIMEOUT!\n");

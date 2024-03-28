@@ -9,6 +9,7 @@
 #include "stm32l475e_iot01_gyro.h"
 #include "stm32l475e_iot01_magneto.h"
 #include "VL53L0X.h"
+#include "cloud.h"
 
 
 SettingsInterface::SettingsInterface(std::string* sensors_list, int number_of_sensors, Threshold* threshold_settings)
@@ -23,7 +24,7 @@ SettingsInterface::SettingsInterface(std::string* sensors_list, int number_of_se
             BSP_HSENSOR_Init();
 
             p[i] = BSP_HSENSOR_ReadHumidity;
-        } else if (sensors[i] == "temperature") {
+        } else if (sensors[i] == "temp") {
             BSP_TSENSOR_Init();
 
             p[i] = BSP_TSENSOR_ReadTemp;
@@ -50,14 +51,12 @@ void SettingsInterface::get_sensor_data(void)
       if (sensor < thresholds[i].min)
       {
         // SEND MQTT MESSAGE THAT BELOW THRESHOLD
-        // TODO
-        printf("Reached below min threshold!\n");
+        cloud_send(sensor, sensors[i], false);
       }
       if (sensor > thresholds[i].max)
       {
         // SEND MQTT MESSAGE THAT ABOVE THRESHOLD
-        // TODO
-        printf("Reached above max threshold!\n");
+        cloud_send(sensor, sensors[i], true);
       }
     //   return sensor;
     }

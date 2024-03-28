@@ -17,6 +17,7 @@
 #include "mbed_events.h"
 #include "mbedtls/error.h"
 #include <string>
+#include "settings.h"
 
 /*
     Private classes for MQTT handling
@@ -34,6 +35,7 @@ MQTTNetwork* mqttNetwork = NULL;
 MQTT::Client<MQTTNetwork, Countdown>* mqttClient = NULL;
 
 static unsigned short mqtt_message_id = 0;
+int call_id = -1;
 
 /* forward declaration */
 int cloud_connect(void);
@@ -54,7 +56,7 @@ void cloud_sync_clock(NetworkInterface* network){
 /*
     initialise cloud enviroment
 */
-void cloud_init(){
+int cloud_init(){
     /* connect to the wifi network */
     int w_ret = wifi.connect(MBED_CONF_APP_WIFI_SSID, MBED_CONF_APP_WIFI_PASSWORD, NSAPI_SECURITY_WPA_WPA2);
     if(w_ret == 0) {
@@ -65,12 +67,14 @@ void cloud_init(){
     
     /* sync the clock */
     cloud_sync_clock(&wifi);    
+    return w_ret;
 }
 
 /*
     Sends an MQTT message to the cloud
 */
-void cloud_send(float distance){
+void cloud_send(float value, string sensor, bool max)
+{
     MQTT::Message message;
     message.retained = false;
     message.dup = false;
@@ -81,9 +85,18 @@ void cloud_send(float distance){
     
     message.qos = MQTT::QOS0;
     message.id = mqtt_message_id++;
-    int ret = snprintf(buf, buf_size, 
-                "THRESHOLD REACHED!\n{\"distance\":%.2f}", 
-                distance);
+    int ret;
+    if (max == true)
+    {
+        ret = snprintf(buf, buf_size, 
+                "Warning! High value detected for sensor %s!\nSensor reading: %f\n", 
+                sensor.c_str(), value);
+    }
+    else {
+        ret = snprintf(buf, buf_size, 
+                "Warning! Low value detected for sensor %s!\nSensor reading: %f\n", 
+                sensor.c_str(), value);
+    }
     if(ret < 0) {
         printf("ERROR: snprintf() returns %d.", ret);
     }
@@ -97,46 +110,7 @@ void cloud_send(float distance){
             printf("Connection status: %d\n", wifi.get_connection_status());
             printf("Reconnecting to MQTT\n");
 
-            // disconnect to reset the connections
-            // mqttNetwork->get_socket()->close();
-            // mqttNetwork->disconnect();
-            // mqttClient->disconnect();
-
             cloud_connect();
-
-            // SocketAddress addr;
-
-            // wifi.gethostbyname(MQTT_SERVER_HOST_NAME, &addr);
-            // addr.set_port(MQTT_SERVER_PORT);
-
-            // // get the network specific socket so we can open a connection with it
-            // // mqttNetwork->get_socket()->open(&wifi);
-
-            // int rc = mqttNetwork->connect(addr, SSL_CA_PEM,
-            //     SSL_CLIENT_CERT_PEM, SSL_CLIENT_PRIVATE_KEY_PEM);
-            // if (rc != MQTT::SUCCESS){
-            //     printf("MQTT network not successful: %d\r\n", rc);
-            // }
-            
-
-            // /* create mqtt data packet */
-            // MQTTPacket_connectData data = MQTTPacket_connectData_initializer;
-            // data.MQTTVersion = 3;
-            // data.clientID.cstring = (char *)MQTT_CLIENT_ID;
-            // data.username.cstring = (char *)MQTT_USERNAME;
-            // data.password.cstring = (char *)MQTT_PASSWORD;
-            // // extra added to keep connection alive past 60 seconds
-            // // maximum short value
-            // data.keepAliveInterval = 65535;
-
-            // /* execute client and send data */
-            // mqttClient = new MQTT::Client<MQTTNetwork, Countdown>(*mqttNetwork);
-            // rc = mqttClient->connect(data);
-            // if (rc != MQTT::SUCCESS) {
-            //     printf("MQTT client failed with code %d\r\n", rc);
-            // }else{
-            //     printf("MQTT connect successful\r\n");
-            // }
         }
     } 
     else 
@@ -146,16 +120,80 @@ void cloud_send(float distance){
     delete[] buf; 
 }
 
+void get_data(SettingsInterface* settings)
+{
+    settings->get_sensor_data();
+}
+
+
 void test_handler(MQTT::MessageData& data)
 {
     printf("Message was just received. Reading data:\n");
     MQTT::Message message = data.message;
     string* message_payload = static_cast<std::string *>(message.payload);
-    printf("%s", message_payload->c_str());
-    // for (int i = 0; i < message.payloadlen; i++)
+    printf("%s\n", message_payload->c_str());
+
+    // const char* threshold_settings_message = message_payload->c_str();
+
+    // create array of std::strings for input
+    const char* token_string = message_payload->c_str();
+
+    vector<string> settings_list;
+    vector<Threshold> threshold_list;
+ 
+    /* Packet: [humidity][temp][pressure][distance] */
+    if (token_string[0] == '1')
+    {
+        settings_list.push_back("humidity");
+        Threshold humid_thres;
+        humid_thres.min = 0.0;
+        humid_thres.max = 20.0;
+        threshold_list.push_back(humid_thres);
+    }
+    if (token_string[1] == '1')
+    {
+        settings_list.push_back("temp");
+        Threshold temp_thres;
+        temp_thres.max = 30.0;
+        temp_thres.min = 5.0;
+        threshold_list.push_back(temp_thres);
+    }
+    if (token_string[2] == '1')
+    {
+        settings_list.push_back("pressure");
+        Threshold pres_thres;
+        pres_thres.max = 30.0;
+        pres_thres.min = 5.0;
+        threshold_list.push_back(pres_thres);
+    }
+    if (token_string[3] == '1')
+    {
+        settings_list.push_back("distance");
+        Threshold dist_thres;
+        dist_thres.min = 0.0;
+        dist_thres.max = 200.0;
+        threshold_list.push_back(dist_thres);    
+    }
+
+    string* settings = new string[settings_list.size()];
+    std::copy(settings_list.begin(), settings_list.end(), settings);
+
+    // printf("List we will push:\n");
+    // for (int i = 0; i < settings_list.size(); i++)
     // {
-    //     printf("%c", ((char*) message.payload)[i]);
+    //     printf("%s\n",settings[i].c_str());
     // }
+
+    Threshold* thresholds = new Threshold[threshold_list.size()];
+    std::copy(threshold_list.begin(), threshold_list.end(), thresholds);
+    SettingsInterface* display_settings = initialize_settings_test(settings, settings_list.size(), thresholds);
+
+    EventQueue *queue = mbed_event_queue();
+    if (call_id != -1)
+    {
+        queue->cancel(call_id);
+    }
+    call_id = queue->call_every(10s, get_data, display_settings);
 
     printf("\nCompleted reading payload data.\n");
 }
@@ -165,7 +203,6 @@ void test_handler(MQTT::MessageData& data)
 */
 void cloud_read(short subscribe)
 {
-    printf("Beforehand: %d\n", mqttClient->isConnected());
     if (subscribe)
     {
         int rc = mqttClient->subscribe(MQTT_TOPIC_SUB, MQTT::QOS0, test_handler);
@@ -180,28 +217,8 @@ void cloud_read(short subscribe)
         }
     }
     else {
-        printf("Close state\n");
         int rc = mqttClient->subscribe(MQTT_TOPIC_SUB, MQTT::QOS0, test_handler);
-        if (rc)
-        {
-            printf("Error subscribing, rc %d. Try restarting the device\n", rc);
-            subscribe = 0;
-        } 
-        else 
-        {
-            printf("Subscribed successfully\n");
-        }
-        // int rc = mqttClient->unsubscribe("csc385-demo-subscription");
-        // if (rc)
-        // {
-        //     printf("Error unsubscribing, rc %d. Try restarting the device\n", rc);
-        // } 
-        // else 
-        // {
-        //     printf("Unsubscribed successfully\n");
-        // }
     }
-    printf("After: %d\n", mqttClient->isConnected());
 }
 
 /*
@@ -214,22 +231,17 @@ int cloud_connect()
     /* create mqtt network instance */
     printf("Initialising MQTT network...\n");
     mqttNetwork = new MQTTNetwork(&wifi);
-    printf("buf1\n");
 
     SocketAddress addr;
 
-    printf("buf2\n");
     wifi.gethostbyname(MQTT_SERVER_HOST_NAME, &addr);
     addr.set_port(MQTT_SERVER_PORT);
-    printf("buf3\n");
 
     // get the network specific socket so we can open a connection with it
     mqttNetwork->get_socket()->open(&wifi);
-    printf("buf4\n");
 
     int rc = mqttNetwork->connect(addr, SSL_CA_PEM,
                 SSL_CLIENT_CERT_PEM, SSL_CLIENT_PRIVATE_KEY_PEM);
-    printf("buf5\n");
     if (rc != MQTT::SUCCESS){
         printf("MQTT network not successful: %d\r\n", rc);
         return 0;
@@ -246,11 +258,9 @@ int cloud_connect()
     // maximum short value
     data.keepAliveInterval = 65535;
 
-    printf("buf6\n");
     /* execute client and send data */
     mqttClient = new MQTT::Client<MQTTNetwork, Countdown>(*mqttNetwork);
     rc = mqttClient->connect(data);
-    printf("buf7\n");
     if (rc != MQTT::SUCCESS) {
         printf("MQTT client failed\r\n");
         return 0;
