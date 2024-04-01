@@ -19,13 +19,11 @@
 #include "mbedtls/error.h"
 #include <string>
 #include "settings.h"
+#include "CONSTANTS.h"
 
 /*
     Private classes for MQTT handling
 */
-
-#define MBED_CONF_APP_WIFI_SSID "SM-G930W88116"
-#define MBED_CONF_APP_WIFI_PASSWORD "zggl7155"
 
 #ifndef WIFI_INTERFACE_DEF
 #define WIFI_INTERFACE_DEF
@@ -149,43 +147,38 @@ void test_handler(MQTT::MessageData& data)
     {
         settings_list.push_back("humidity");
         Threshold humid_thres;
-        humid_thres.min = 0.0;
-        humid_thres.max = 20.0;
+        humid_thres.min = HUMIDITY_MINIMUM_THRESHOLD;
+        humid_thres.max = HUMIDITY_MAXIMUM_THRESHOLD;
         threshold_list.push_back(humid_thres);
     }
     if (token_string[1] == '1')
     {
         settings_list.push_back("temp");
         Threshold temp_thres;
-        temp_thres.max = 30.0;
-        temp_thres.min = 5.0;
+        temp_thres.min = TEMPERATURE_MINIMUM_THRESHOLD;
+        temp_thres.max = TEMPERATURE_MAXIMUM_THRESHOLD;
         threshold_list.push_back(temp_thres);
     }
     if (token_string[2] == '1')
     {
         settings_list.push_back("pressure");
         Threshold pres_thres;
-        pres_thres.max = 30.0;
-        pres_thres.min = 5.0;
+        pres_thres.max = PRESSURE_MAXIMUM_THRESHOLD;
+        pres_thres.min = PRESSURE_MINIMUM_THRESHOLD;
         threshold_list.push_back(pres_thres);
     }
     if (token_string[3] == '1')
     {
         settings_list.push_back("distance");
         Threshold dist_thres;
-        dist_thres.min = 100.0;
-        dist_thres.max = 350.0;
+        dist_thres.min = DISTANCE_MINIMUM_THRESHOLD;
+        dist_thres.max = DISTANCE_MAXIMUM_THRESHOLD;
         threshold_list.push_back(dist_thres);    
     }
 
     string* settings = new string[settings_list.size()];
     std::copy(settings_list.begin(), settings_list.end(), settings);
 
-    // printf("List we will push:\n");
-    // for (int i = 0; i < settings_list.size(); i++)
-    // {
-    //     printf("%s\n",settings[i].c_str());
-    // }
 
     Threshold* thresholds = new Threshold[threshold_list.size()];
     std::copy(threshold_list.begin(), threshold_list.end(), thresholds);
