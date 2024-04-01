@@ -25,6 +25,7 @@ float DISTANCE_MAXIMUM_THRESHOLD = 600.0;
 /*
  * MQTT CONFIG
  */
+const char MQTT_SERVER_HOST_NAME[] = "....iot.us-east-2.amazonaws.com";
 const char MQTT_TOPIC_PUB[] = "csc385-demo";
 const char MQTT_TOPIC_SUB[] = "csc385-demo-subscription";
 
