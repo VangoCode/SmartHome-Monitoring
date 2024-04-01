@@ -49,6 +49,8 @@ int main()
         // Subscribe to topic
         cloud_read(1);
 
+        queue->call_every(15s, cloud_keep_connection_alive);
+
         user_button.fall(queue->event(send_reading_to_aws));
         printf("Attached button handler for message sending\n");
     } else {

@@ -3,6 +3,7 @@
  */
 
 #include "SocketAddress.h"
+#include <cstring>
 #define MQTTCLIENT_QOS1 0
 #define MQTTCLIENT_QOS2 0
 
@@ -36,6 +37,8 @@ MQTT::Client<MQTTNetwork, Countdown>* mqttClient = NULL;
 
 static unsigned short mqtt_message_id = 0;
 int call_id = -1;
+
+const char* keep_alive_message = "keep-alive";
 
 /* forward declaration */
 int cloud_connect(void);
@@ -170,8 +173,8 @@ void test_handler(MQTT::MessageData& data)
     {
         settings_list.push_back("distance");
         Threshold dist_thres;
-        dist_thres.min = 0.0;
-        dist_thres.max = 200.0;
+        dist_thres.min = 100.0;
+        dist_thres.max = 350.0;
         threshold_list.push_back(dist_thres);    
     }
 
@@ -270,4 +273,29 @@ int cloud_connect()
     }
     
     return result;
+}
+
+
+/*
+Keep the cloud MQTT connection alive.
+*/
+int cloud_keep_connection_alive()
+{
+    MQTT::Message message;
+    message.retained = false;
+    message.dup = false;
+    
+    message.payload = (void*)keep_alive_message;
+    
+    message.qos = MQTT::QOS0;
+    message.id = mqtt_message_id++;
+    message.payloadlen = std::strlen(keep_alive_message);
+    
+    int rc = mqttClient->publish("keep-alive", message);
+    if(rc != MQTT::SUCCESS) {
+        printf("ERROR: rc from MQTT publish is %d\r\n", rc);
+        return -1;
+    }
+
+    return 0;
 }
