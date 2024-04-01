@@ -19,6 +19,52 @@ This project has a number of additional technical features, mostly to preserve p
 - Messages are only read when you press the user button. This conserves power and acts as an additional feature, that the settings can only be changed with a physical push; a malicious actor cannot randomly send a message and remove monitoring
 
 ### Setup
+For onboarding your discovery board to AWS IoT, you must first create an AWS account and sign in to the AWS console. Navigate to the `IoT Core` service using the search bar on the top navigation bar. Then, on the side bar, select `Manage > All devices > Things`. Here, you will register your discovery board as a *Thing*!
+
+Choose `Create single thing`. Then, you will be prompted to specify properties for this Thing. Enter a name for your Thing. It should look like this: ![image](./readme-images/...)
+
+Next, you will be prompted to configure a certificate for your Thing, so that your board can connect to AWS IoT. Select `Auto-generate a new certificate`.
+
+Finally, you will be prompted to attach policies to this certificate, which allow you to specify which AWS IoT resources your device has access to. Click on the `Create policy` button, which will take you to a new tab. Here, you can create the policy. Give it a name, and a policy statement. In the policy statement section, select the `JSON` mode, and copy-and-paste this into it:
+
+```
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": "iot:Connect",
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": "iot:Publish",
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": "iot:Subscribe",
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": "iot:Receive",
+      "Resource": "*"
+    }
+  ]
+}
+```
+Your page should look like this: 
+ADD IMAGE HERE
+Now, click the `Create` button. Your page should look like this now that you have successfully created a policy: 
+ADD IMAGE HERE
+Next, navigate back to the Thing creation tab. You should now see your newly created policy: 
+ADD IMAGE
+Select your policy, and click the `Create thing` button. 
+
+Then, a modal will pop up and it will prompt you to download the public and private key files for your certificate, and the Amazon root CA certificate. You must download the public and private key files, as this will be the **only** time you will be able to do so. 
+
+Congrats! You have successfully registered your Thing. Now, take the certificate files you have downloaded, and insert their contents into `stm32l475_vl53l0x/cloud/MQTT_server_setting.h`. 
 
 ### Project Flow
 
