@@ -104,13 +104,19 @@ On the AWS IoT console, go to `Message Routing > Rules` and click on the `Create
 ```
 SELECT * FROM 'your-pub-topic'
 ```
-Next, attach an action to your rule. This is where you want the selected MQTT messages to be routed to. In this case, select `Simple Notification Service (SNS)`. Now, you must create an SNS topic by clicking the `Create SNS topic` button, which will take you to a new tab. Enter the details like this: ADD IMAGE HERE
+Next, attach an action to your rule. This is where you want the selected MQTT messages to be routed to. In this case, select `Simple Notification Service (SNS)`. Now, you must create an SNS topic by clicking the `Create SNS topic` button, which will take you to a new tab. Enter the details like this: 
+
+![image](./readme-images/topic-properties.png)
+
 and select `Create topic`. You will be able to see your newly created topic. Now, you must create a subscription to this topic using the `Create subscription` button. Select the `SMS` protocol, and register and add your phone number. Click the `Subscribe` button. 
 
 Navigate back to the IoT rule tab. Choose the SNS topic that you created, and create a new IAM role for AWS IoT to publish to that topic like this:
-ADD PICTURE HERE
+
+![image](./readme-images/subscription-sms.png)
+
 Once you confirm everything and create the rule, your page should look like this:
-ADD IMAGE
+
+![image](./readme-images/done-rule.png)
 
 Woohoo! You have completed the set-up!
 
