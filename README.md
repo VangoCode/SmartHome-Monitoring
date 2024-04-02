@@ -56,15 +56,38 @@ Finally, you will be prompted to attach policies to this certificate, which allo
 ```
 Your page should look like this: 
 ADD IMAGE HERE
-Now, click the `Create` button. Your page should look like this now that you have successfully created a policy: 
-ADD IMAGE HERE
+Now, click the `Create` button. Your page should look like this now that you have successfully created a policy.
 Next, navigate back to the Thing creation tab. You should now see your newly created policy: 
 ADD IMAGE
 Select your policy, and click the `Create thing` button. 
 
 Then, a modal will pop up and it will prompt you to download the public and private key files for your certificate, and the Amazon root CA certificate. You must download the public and private key files, as this will be the **only** time you will be able to do so. 
 
-Congrats! You have successfully registered your Thing. Now, take the certificate files you have downloaded, and insert their contents into `stm32l475_vl53l0x/cloud/MQTT_server_setting.h`. 
+Congrats! You have successfully registered your Thing. Now, take the certificate files you have downloaded, and insert their contents into `stm32l475_vl53l0x/cloud/CONSTANTS.h`. Insert the Amazon Root CA 1 certificate like so:
+```
+const char* SSL_CA_PEM = "-----BEGIN CERTIFICATE-----\n"
+"INSERT HERE\n"
+"-----END CERTIFICATE-----\n";
+```
+Insert your Certificate contents like this:
+```
+const char* SSL_CLIENT_CERT_PEM = "-----BEGIN CERTIFICATE-----\n"
+"INSERT HERE\n"
+"-----END CERTIFICATE-----\n";
+```
+Insert your private key contents like this:
+```
+const char* SSL_CLIENT_PRIVATE_KEY_PEM = "-----BEGIN RSA PRIVATE KEY-----\n"
+"INSERT HERE\n"
+"-----END RSA PRIVATE KEY-----\n";
+```
+To find your device's endpoint (in our case, we will send MQTT messages here), go to the AWS IoT Settings like this:
+ADD IMAGE HERE
+Insert this endpoint into the `CONSTANTS.h` file like this:
+```
+const char MQTT_SERVER_HOST_NAME[] = "INSERT ENDPOINT HERE";
+```
+Woohoo! You have completed the set-up!
 
 ### Project Flow
 
