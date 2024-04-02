@@ -21,7 +21,9 @@ This project has a number of additional technical features, mostly to preserve p
 ### Setup
 For onboarding your discovery board to AWS IoT, you must first create an AWS account and sign in to the AWS console. Navigate to the `IoT Core` service using the search bar on the top navigation bar. Then, on the side bar, select `Manage > All devices > Things`. Here, you will register your discovery board as a *Thing*!
 
-Choose `Create single thing`. Then, you will be prompted to specify properties for this Thing. Enter a name for your Thing. It should look like this: ![image](./readme-images/...)
+Choose `Create single thing`. Then, you will be prompted to specify properties for this Thing. Enter a name for your Thing. It should look like this: 
+
+![image](./readme-images/thing-properties.png)
 
 Next, you will be prompted to configure a certificate for your Thing, so that your board can connect to AWS IoT. Select `Auto-generate a new certificate`.
 
@@ -55,13 +57,19 @@ Finally, you will be prompted to attach policies to this certificate, which allo
 }
 ```
 Your page should look like this: 
-ADD IMAGE HERE
+
+![image](./readme-images/policy-statement.png)
+
 Now, click the `Create` button. Your page should look like this now that you have successfully created a policy.
 Next, navigate back to the Thing creation tab. You should now see your newly created policy: 
-ADD IMAGE
+
+![image](./readme-images/select-policy.png)
+
 Select your policy, and click the `Create thing` button. 
 
-Then, a modal will pop up and it will prompt you to download the public and private key files for your certificate, and the Amazon root CA certificate. You must download the public and private key files, as this will be the **only** time you will be able to do so. 
+Then, a modal will pop up and it will prompt you to download the public and private key files for your certificate, and the Amazon root CA certificate. You **must** download the public and private key files, as this will be the **only** time you will be able to do so. 
+
+![image](./readme-images/certificates-modal.png)
 
 Congrats! You have successfully registered your Thing. Now, take the certificate files you have downloaded, and insert their contents into `stm32l475_vl53l0x/cloud/CONSTANTS.h`. Insert the Amazon Root CA 1 certificate like so:
 ```
@@ -82,7 +90,9 @@ const char* SSL_CLIENT_PRIVATE_KEY_PEM = "-----BEGIN RSA PRIVATE KEY-----\n"
 "-----END RSA PRIVATE KEY-----\n";
 ```
 To find your device's endpoint (in our case, we will send MQTT messages here), go to the AWS IoT Settings like this:
-ADD IMAGE HERE
+
+![image](./readme-images/device-endpoint.png)
+
 Insert this endpoint into the `CONSTANTS.h` file like this:
 ```
 const char MQTT_SERVER_HOST_NAME[] = "INSERT ENDPOINT HERE";
