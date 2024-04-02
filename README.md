@@ -19,6 +19,7 @@ This project has a number of additional technical features, mostly to preserve p
 - Messages are only read when you press the user button. This conserves power and acts as an additional feature, that the settings can only be changed with a physical push; a malicious actor cannot randomly send a message and remove monitoring
 
 ### Setup
+#### Create a Thing in AWS IoT
 For onboarding your discovery board to AWS IoT, you must first create an AWS account and sign in to the AWS console. Navigate to the `IoT Core` service using the search bar on the top navigation bar. Then, on the side bar, select `Manage > All devices > Things`. Here, you will register your discovery board as a *Thing*!
 
 Choose `Create single thing`. Then, you will be prompted to specify properties for this Thing. Enter a name for your Thing. It should look like this: 
@@ -71,7 +72,7 @@ Then, a modal will pop up and it will prompt you to download the public and priv
 
 ![image](./readme-images/certificates-modal.png)
 
-Congrats! You have successfully registered your Thing. Now, take the certificate files you have downloaded, and insert their contents into `stm32l475_vl53l0x/cloud/CONSTANTS.h`. Insert the Amazon Root CA 1 certificate like so:
+Now, take the certificate files you have downloaded, and insert their contents into `stm32l475_vl53l0x/cloud/CONSTANTS.h`. Insert the Amazon Root CA 1 certificate like so:
 ```
 const char* SSL_CA_PEM = "-----BEGIN CERTIFICATE-----\n"
 "INSERT HERE\n"
@@ -97,6 +98,20 @@ Insert this endpoint into the `CONSTANTS.h` file like this:
 ```
 const char MQTT_SERVER_HOST_NAME[] = "INSERT ENDPOINT HERE";
 ```
+#### Set Up Message Routing to AWS SNS
+Now, we will be routing the MQTT messages from AWS IoT to AWS SNS, which you can use to receive text messages. 
+On the AWS IoT console, go to `Message Routing > Rules` and click on the `Create rule` button. Give your rule a name, and to configure a SQL statement to filter received MQTT messages, type in this with your MQTT publishing topic name:
+```
+SELECT * FROM 'your-pub-topic'
+```
+Next, attach an action to your rule. This is where you want the selected MQTT messages to be routed to. In this case, select `Simple Notification Service (SNS)`. Now, you must create an SNS topic by clicking the `Create SNS topic` button, which will take you to a new tab. Enter the details like this: ADD IMAGE HERE
+and select `Create topic`. You will be able to see your newly created topic. Now, you must create a subscription to this topic using the `Create subscription` button. Select the `SMS` protocol, and register and add your phone number. Click the `Subscribe` button. 
+
+Navigate back to the IoT rule tab. Choose the SNS topic that you created, and create a new IAM role for AWS IoT to publish to that topic like this:
+ADD PICTURE HERE
+Once you confirm everything and create the rule, your page should look like this:
+ADD IMAGE
+
 Woohoo! You have completed the set-up!
 
 ### Project Flow
